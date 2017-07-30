@@ -149,9 +149,8 @@ count(subset(Recommendations, Recommendations > 0))
 
 Another Interesting point of study could be Credit Grade, but considering there are 84984 missing values we may have to pass this up. The data is very uniform however, so it might be useful in later analysis.
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-CreditGrade <- data['CreditGrade']
-summary(CreditGrade)
-ggplot(data, aes(CreditGrade)) + geom_bar()
+temp <- subset(data, !is.na(data$CreditGrade))
+ggplot(temp, aes(x= reorder(CreditGrade, CreditGrade, function(x) - length(x)))) + geom_bar()
 ```
 
 We will continue our investigation of the variables and see if we find anything interesting
@@ -307,13 +306,13 @@ This is an interesting find, lets keep going.
 Another question we posed was whether Prosper Score could determine if someone would be less likely to be delinquent.It doesnt seem so, based on this uniform graph. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(data, aes(x=ProsperScore, y=Current_Delinquincies)) + geom_jitter(color="dark blue")
+ggplot(data, aes(x=ProsperScore, y=Current_Delinquincies)) + geom_jitter(alpha=1/10, color="dark blue")
 ```
 
 
 Another question we asked was if Listing Category made a difference in delinquincies or not. This does not seem to be the case.
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(data, aes(x=ListingCategory, y=Current_Delinquincies)) + geom_jitter(color="dark red")
+ggplot(data, aes(x=ListingCategory, y=Current_Delinquincies)) + geom_jitter(alpha=1/10,color="dark red")
 ```
 
 Credit Score did show a trend however. The trend shows that people with higher credit scores do tend to have less delinquincies.  
@@ -389,7 +388,7 @@ We will go deeper in our Credit Score analysis and compare Delinquencies and cre
 
 breaks1 <- c(0, 650, 750, 1000)
 Credit_Score <- cut(data$CreditScoreRangeLower, breaks=breaks1, labels=c('Low','Medium','High'))
-ggplot(data, aes(x=Credit_Score_Lower, y=Current_Delinquincies)) + geom_bar(stat='identity', aes(color=Credit_Score))
+ggplot(data, aes(x=Credit_Score_Lower, y=Current_Delinquincies)) + geom_bar(stat='identity', aes(fill=Credit_Score))
 
 Low_count <- count(subset(Credit_Score_Lower, Credit_Score_Lower < 650))
 Mid_count <- count(subset(Credit_Score_Lower, Credit_Score_Lower > 650 & Credit_Score_Lower < 750))
@@ -425,7 +424,7 @@ df8 <- data.frame(Current_Delinquincies, MonthlyIncome)
 Current_Delinq_Monthly_Income <- subset(df8, MonthlyIncome < 50000)
 Income_Class <- cut(Current_Delinq_Monthly_Income$StatedMonthlyIncome, breaks=breaks2, labels=c("Below Minimum Wage", "Below Median Wage", "Upper Middle Class", "Educated Professional", "Upper Class"))
 ggplot(Current_Delinq_Monthly_Income, aes(x=StatedMonthlyIncome, 
-                                          y=CurrentDelinquencies))  + geom_jitter(alpha= 1/9, aes(color=Income_Class)) + ggtitle("Delinquencies and Income") + labs(x="Monthly Income", y="Delinquencies")
+                                          y=CurrentDelinquencies))  + geom_jitter(alpha= 1/9, aes(color=Income_Class)) + guides(colour =guide_legend(override.aes = list(alpha=1))) + ggtitle("Delinquencies and Income") + labs(x="Monthly Income", y="Delinquencies")
 ```
 
 
@@ -439,7 +438,7 @@ df9 <- data.frame(Current_Delinquincies, Debt_to_income_ratio)
 Current_Delinq_Debt <- subset(df9, Debt_to_income_ratio < 1)
 Ratio_Quartiles <- cut(Current_Delinq_Debt$DebtToIncomeRatio, breaks=breaks3, labels=c("Q1", "Q2", "Q3", "Q4"))
 ggplot(Current_Delinq_Debt, aes(x=DebtToIncomeRatio,
-                                y=CurrentDelinquencies)) + geom_jitter(alpha=1/9, aes(color=Ratio_Quartiles)) + ggtitle("Delinquencies and Debt to Income Ratios") + labs(x="Debt to Income Ratio", y="Delinquencies")
+                                y=CurrentDelinquencies)) + geom_jitter(alpha=1/9, aes(color=Ratio_Quartiles)) + guides(colour =guide_legend(override.aes = list(alpha=1))) + ggtitle("Delinquencies and Debt to Income Ratios") + labs(x="Debt to Income Ratio", y="Delinquencies")
 
 ```
 
@@ -495,7 +494,7 @@ df8 <- data.frame(Current_Delinquincies, MonthlyIncome)
 Current_Delinq_Monthly_Income <- subset(df8, MonthlyIncome < 50000)
 Income_Class <- cut(Current_Delinq_Monthly_Income$StatedMonthlyIncome, breaks=breaks2, labels=c("Below Minimum Wage", "Below Median Wage", "Upper Middle Class", "Educated Professional", "Upper Class"))
 ggplot(Current_Delinq_Monthly_Income, aes(x=StatedMonthlyIncome, 
-                                          y=CurrentDelinquencies))  + geom_jitter(alpha= 1/9, aes(color=Income_Class)) + ggtitle("Delinquencies and Income") + labs(x="Monthly Income $", y="# of Delinquencies")
+                                          y=CurrentDelinquencies))  + geom_jitter(alpha= 1/9, aes(color=Income_Class)) + guides(colour =guide_legend(override.aes = list(alpha=1))) + ggtitle("Delinquencies and Income") + labs(x="Monthly Income $", y="# of Delinquencies")
 ```
 
 This graph is important because it shows a strong correlation between monthly income and someone's delinquencies. This trend helps us answer our original question. Even after controlling for different number of observations between the different income groups in the last section, we still found that the trend was still there.  
@@ -504,7 +503,7 @@ This graph is important because it shows a strong correlation between monthly in
 breaks1 <- c(0, 650, 750, 1000)
 Credit_Score_Groups <- cut(data$CreditScoreRangeLower, breaks=breaks1, labels=c('Low Score','Medium Score','High Score'))
 ggplot(data, aes(x=Credit_Score_Lower, 
-                 y=Current_Delinquincies)) + geom_jitter(alpha=1/9, aes(color=Credit_Score_Groups)) + ggtitle("Delinquencies and Credit Score") + labs(x="Credit Score", y="# of Delinquencies")
+                 y=Current_Delinquincies)) + geom_jitter(alpha=1/9, aes(color=Credit_Score_Groups)) + guides(colour =guide_legend(override.aes = list(alpha=1))) + ggtitle("Delinquencies and Credit Score") + labs(x="Credit Score", y="# of Delinquencies")
 ```
 
 This graph is important because it is one of the only 2 graphs that shows a strong correlation. Someone with a higher credit score is less likely to have delinquencies. I decided to just use Credit Score Loer because the Upper Credit Scores contained the exact same values, that were just 19 points higher. Adding them together and dividing by 2 didnt seem right to me so I just used Credit Score Lower to avoid confusion.
@@ -517,7 +516,7 @@ df9 <- data.frame(Current_Delinquincies, Debt_to_income_ratio)
 Current_Delinq_Debt <- subset(df9, Debt_to_income_ratio < 1)
 Ratio_Quartiles <- cut(Current_Delinq_Debt$DebtToIncomeRatio, breaks=breaks3, labels=c("Q1", "Q2", "Q3", "Q4"))
 ggplot(Current_Delinq_Debt, aes(x=DebtToIncomeRatio,
-                                y=CurrentDelinquencies)) + geom_jitter(alpha=1/9, aes(color=Ratio_Quartiles)) + ggtitle("Delinquencies and Debt to Income Ratios") + labs(x="Debt to Income Ratio", y="# of Delinquencies")
+                                y=CurrentDelinquencies)) + geom_jitter(alpha=1/9, aes(color=Ratio_Quartiles)) + guides(colour =guide_legend(override.aes = list(alpha=1))) + ggtitle("Delinquencies and Debt to Income Ratios") + labs(x="Debt to Income Ratio", y="# of Delinquencies")
 ```
 
 This graph is important because it shows us Debt to Income is not a significant factor in whether people pay back their loans. A low Debt to Income Ratio means people have an income much greater than their expenses. Even with this fact, there are still many delinquencies in the Q1 low ratio group. This is counter-intuitive and shows that people can still fail to pay their loans even if they dont have alot of money left over from their other expenses. 
