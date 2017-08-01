@@ -231,9 +231,8 @@ Debt_to_income_ratio <- data['DebtToIncomeRatio']
 summary(Debt_to_income_ratio)
 
 df15 <- data.frame(Debt_to_income_ratio)
-df20 <- subset(df15, Debt_to_income_ratio < 1)
-qplot(df20)
-
+DebtToIncome <- subset(df15, Debt_to_income_ratio < 1)
+qplot(DebtToIncome)
 
 ```
 
@@ -300,7 +299,7 @@ percent_past_due_current_delinquincy
 
 Next we will try to answer the question posed in our first section. Does a higher interest rate lead to more delinquencies?  
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(data, aes(x=BorrowerAPR, y=Current_Delinquincies)) + 
+ggplot(data, aes(x= BorrowerAPR, y=Current_Delinquincies)) + 
   geom_jitter(alpha=1/8, color="red")
 ```
 
@@ -309,8 +308,10 @@ This is an interesting find, lets keep going.
 Another question we posed was whether Prosper Score could determine if someone would be less likely to be delinquent.It doesnt seem so, based on this uniform graph. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(data, aes(x=ProsperScore, y=Current_Delinquincies)) + 
+
+ggplot(data, aes(x=ProsperScore, y=Current_Delinquincies2)) + 
   geom_jitter(alpha=1/10, color="dark blue")
+
 ```
 
 
